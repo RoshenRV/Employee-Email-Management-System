@@ -1,0 +1,1175 @@
+// MESSAGES
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package groupproject;
+
+/**
+ *
+ * @author Roshen
+ */
+public class Message
+{
+    private String fromAddress;
+    private String toAddress;
+    private String subject;
+    private String date;
+    private Priority priority;
+    private String messageBody;
+    private int messageID;
+    
+    public Message()
+    {
+        fromAddress = "";
+        toAddress = "";
+        subject = "";
+        date = "";
+        priority = null;
+        messageBody = "";
+        messageID = 0; 
+    }
+
+    public Message(String fromAddress, String toAddress, String subject, String date, Priority priority, String messageBody, int messageID)
+    {
+        this.fromAddress = fromAddress;
+        this.toAddress = toAddress;
+        this.subject = subject;
+        this.date = date;
+        this.priority = priority;
+        this.messageBody = messageBody;
+        this.messageID = messageID;
+    } 
+//GETTERS
+    public String getFromAddress()
+    {
+        return fromAddress;
+    }
+
+    public String getToAddress()
+    {
+        return toAddress;
+    }
+
+    public String getSubject()
+    {
+        return subject;
+    }
+
+    public String getDate()
+    {
+        return date;
+    }
+
+    public Priority getPriority()
+    {
+        return priority;
+    }
+
+    public String getMessageBody()
+    {
+        return messageBody;
+    }
+
+    public int getMessageID()
+    {
+        return messageID;
+    }
+
+    
+    //SETTERS
+    public void setFromAddress(String fromAddress)
+    {
+        this.fromAddress = fromAddress;
+    }
+
+    public void setToAddress(String toAddress)
+    {
+        this.toAddress = toAddress;
+    }
+
+    public void setSubject(String subject)
+    {
+        this.subject = subject;
+    }
+
+    public void setDate(String date)
+    {
+        this.date = date;
+    }
+
+    public void setPriority(Priority priority)
+    {
+        this.priority = priority;
+    }
+
+    public void setMessageBody(String messageBody)
+    {
+        this.messageBody = messageBody;
+    }
+
+    public void setMessageID(int messageID)
+    {
+        this.messageID = messageID;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "+--------------------------------------------+" 
+                + "\nFrom: " + fromAddress 
+                + "\nTo: " + toAddress 
+                + "\nSubject: " + subject 
+                + "\nDate: " + date
+                + "\nPriority: " + priority 
+                + "\nMessageBody: " + messageBody 
+                + "\nMessageID: " + messageID +
+               "\n+--------------------------------------------+" ;
+    }
+    
+   public String save()
+   {
+       return fromAddress+","+toAddress+","+subject+","+date+","+priority+","+messageBody+","+messageID;
+   }
+   
+   public enum Priority
+   {
+       HIGH,
+       MEDIUM,
+       LOW
+   }
+}
+ 
+ //MESSAGESTORE
+ /*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package groupproject;
+
+import static groupproject.Message.Priority.HIGH;
+import static groupproject.Message.Priority.LOW;
+import static groupproject.Message.Priority.MEDIUM;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Random;
+import java.util.Scanner;
+
+/**
+ *
+ * @author Roshen
+ */
+public class MessageStore
+{
+
+    private ArrayList<Message> messageBank = new ArrayList<>();
+
+    public MessageStore()
+    {
+
+    }
+
+    public boolean adminstratorLogin(String userInput, String passInput)
+    {
+        Scanner keyboard = new Scanner(System.in);
+        String username = "username", password = "password";
+        boolean adminLog = false;
+        int loginAttempts = 0;
+
+        while (adminLog == false && loginAttempts != 3)
+        {
+            if (userInput.equals(username) && passInput.equals(password))
+            {
+                adminLog = true;
+
+            }
+            else
+            {
+                loginAttempts++;
+                System.out.println("Sorry Incorrect Username or Password. Please Try Again!");
+            }
+            if (loginAttempts == 3)
+            {
+                System.out.println("-------------------------------------");
+                System.out.println("3 Failed Attempts --> SYSTEM LOCKED!! \nPlease Re-run the program");
+                System.out.println("-------------------------------------");
+            }
+        }
+
+        return adminLog;
+    }
+
+//    public void loadMessageList()
+//    {
+//        messageBank.add(new Message("a@mail.com", "f@mail.com", "hello", 1997-06-12, HIGH, "hello world jones", 12345));
+//        messageBank.add(new Message("a@mail.com", "b@mail.com", "hello", "08-07-13", HIGH, "hello world hillary", 6789));
+//        messageBank.add(new Message("g@mail.com", "c@mail.com", "hello", "21-01-14", LOW, "hello world jones", 46852));
+//        messageBank.add(new Message("g@mail.com", "d@mail.com", "hello", "19-03-15", MEDIUM, "hello world nick", 2355));
+//        messageBank.add(new Message("t@mail.com", "e@mail.com", "hello", "04-08-15", HIGH, "hello world bob", 7521));
+//    }
+
+    public void loadData(String file) throws FileNotFoundException
+    {
+        try
+        {
+            File dataFile = new File(file);
+            Scanner sc = new Scanner(dataFile).useDelimiter(",");
+
+            while (sc.hasNext())
+            {
+                String fromAddress = sc.next();
+                //System.out.println("fromAddress: " + fromAddress);
+
+                String toAddress = sc.next();
+//                System.out.println("toAddress: " + toAddress);
+
+                String subject = sc.next();
+//                System.out.println("subject: " + subject);
+
+                String date = sc.next();
+//                System.out.println("date: " + date);
+
+                String priority = sc.next();
+                Message.Priority prior=  Message.Priority.valueOf(priority.toUpperCase());
+//                System.out.println("priority: " + priority);
+
+                String messageBody = sc.next();
+//                System.out.println("messageBody: " + messageBody);
+
+                int messageID = sc.nextInt();
+//                System.out.println("messageID: " + messageID);
+
+                messageBank.add(new Message(fromAddress, toAddress, subject, date, prior, messageBody, messageID));
+
+            }
+            sc.close();
+        } catch (IOException e)
+        {
+            
+        }
+        System.out.println("\nData Loaded fromt the file");
+    }
+
+    public void writeData(String outputFile)
+    {
+        try
+        {
+            PrintWriter writer = new PrintWriter(outputFile);
+
+            for (Message e : messageBank)
+            {
+                writer.print(e.save() + ",");
+            }
+            writer.close();
+        } catch (FileNotFoundException ex)
+        {
+            System.out.print("There was an error saving the messages");
+        }
+
+    }
+
+    public void addMessage(String fromAddress, String toAddress, String subject, Message.Priority priority, String messageBody)
+    {
+        String date = date();
+        int messageID = randomNumber();
+        messageBank.add(new Message(fromAddress, toAddress, subject, date, priority, messageBody, messageID));
+    }
+
+    public String date()
+    {
+        Format formatter = new SimpleDateFormat("dd-MM-yy");
+        String s = formatter.format(new Date());
+
+        return s;
+    }
+
+    public int randomNumber()
+    {
+        boolean end = true;
+        int id = 0;
+        Random r = new Random();
+
+        while (end)
+        {
+            id = r.nextInt(100009);
+
+            if (idChecker(id))
+            {
+                end = !end;
+            }
+        }
+        return id;
+    }
+
+    // Ensure the storedEmail is unique
+    public boolean idChecker(int id)
+    {
+        boolean check = true;
+        for (int i = 0; i < messageBank.size(); i++)
+        {
+            Message getMessage = messageBank.get(i);
+            if (id == getMessage.getMessageID())
+            {
+                check = false;
+            }
+        }
+
+        return check;
+    }
+
+    public void printAllMessage()
+    {
+        for (Message x : messageBank)
+        {
+            System.out.println(x);
+        }
+    }
+
+    public ArrayList<Message> specificMessageByID(int msgID)
+    {
+        ArrayList<Message> msgs = new ArrayList<Message>();
+        for (int i = 0; i < messageBank.size(); i++)
+        {
+            Message e = messageBank.get(i); // Getting the mails object
+            int id = e.getMessageID(); // Getting the name from the object
+            if (id == msgID)// Deciding if their the same
+            {
+                msgs.add(e);// Adding them to an arraylist
+            }
+        }
+
+        return msgs;
+    }
+
+    public ArrayList<Message> specificMessageByEmail(String email, int num)
+    {
+
+        ArrayList<Message> mails = new ArrayList<Message>();
+        for (int i = 0; i < messageBank.size(); i++)
+        {
+            Message e = messageBank.get(i); // Getting the mails object
+            String storedEmail = ""; // Getting the name from the object
+            if (num == 4)
+            {
+                storedEmail = e.getFromAddress();
+            }
+            else
+            {
+                storedEmail = e.getToAddress();
+            }
+
+            if (storedEmail.equals(email))// Deciding if their the same
+            {
+                mails.add(e);// Adding them to an arraylist
+            }
+        }
+
+        return mails;
+    }
+
+    public ArrayList<Message> specificMessageByPriority(Message.Priority prior)
+    {
+        ArrayList<Message> priorBank = new ArrayList<Message>();
+        for (int i = 0; i < messageBank.size(); i++)
+        {
+            Message e = messageBank.get(i); // Getting the mails object
+            Message.Priority storedPrior = e.getPriority(); // Getting the name from the object
+            if (storedPrior.equals(prior))// Deciding if their the same
+            {
+                priorBank.add(e);// Adding them to an arraylist
+            }
+        }
+
+        return priorBank;
+    }
+
+    public ArrayList<Message> specificMessageBySubstring(String prior)
+    {
+        ArrayList<Message> stringBank = new ArrayList<Message>();
+        for (int i = 0; i < messageBank.size(); i++)
+        {
+            Message e = messageBank.get(i); // Getting the mails object
+            String storedString = e.getMessageBody(); // Getting the name from the object
+            if (storedString.toLowerCase().contains(prior.toLowerCase()))// Deciding if their the same
+            {
+                stringBank.add(e);// Adding them to an arraylist
+            }
+        }
+
+        return stringBank;
+    }
+
+    public ArrayList<Message> specificMessageByDate(String date)
+    {
+        ArrayList<Message> dateBank = new ArrayList<Message>();
+        for (int i = 0; i < messageBank.size(); i++)
+        {
+            Message e = messageBank.get(i); // Getting the mails object
+            String storedDate = e.getDate(); // Getting the name from the object
+            if (storedDate.equals(date))// Deciding if their the same
+            {
+                dateBank.add(e);// Adding them to an arraylist
+            }
+        }
+
+        return dateBank;
+    }
+
+    public ArrayList<Message> arrayList()
+    {
+        ArrayList<Message> dataBank = new ArrayList<Message>();
+        for (int i = 0; i < messageBank.size(); i++)
+        {
+            Message e = messageBank.get(i); // Getting the mails object
+            dataBank.add(e);
+
+        }
+
+        return dataBank;
+    }
+
+    public static class OrderByID implements Comparator<Message>
+    {
+
+        @Override
+        public int compare(Message o1, Message o2)
+        {
+            return o1.getMessageID() > o2.getMessageID() ? 1 : (o1.getMessageID() < o2.getMessageID() ? -1 : 0);
+        }
+    }
+
+    public static class OrderByDate implements Comparator<Message>
+    {
+
+        @Override
+        public int compare(Message o1, Message o2)
+        {
+            return o1.getDate().compareTo(o2.getDate());
+        }
+    }
+
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//EMPLOYEE
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package groupproject;
+
+/**
+ *
+ * @author Roshen
+ */
+public class Employeee
+{
+
+    private String name;
+    private int employeeID;
+    private String dateOfBirth;
+    private String emailAddress;
+    private int phone;
+    private String password;
+    private Double salary;
+    private Double hoursWorked;
+    private Double hourlyRate;
+
+    public Employeee(String name, int employeeID, String dateOfBirth, String emailAddress, int phone, String password)
+    {
+        this.name = name;
+        this.employeeID = employeeID;
+        this.dateOfBirth = dateOfBirth;
+        this.emailAddress = emailAddress;
+        this.phone = phone;
+        this.password = password;
+    }
+    
+   // For agent
+    public Employeee(String name, int employeeID, String dateOfBirth, String emailAddress, int phone, String password, Double salary)
+    {
+        this.name = name;
+        this.employeeID = employeeID;
+        this.dateOfBirth = dateOfBirth;
+        this.emailAddress = emailAddress;
+        this.phone = phone;
+        this.password = password;
+        this.salary = salary;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public int getEmployeeID()
+    {
+        return employeeID;
+    }
+
+    public void setEmployeeID(int employeeID)
+    {
+        this.employeeID = employeeID;
+    }
+
+    public String getDateOfBirth()
+    {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(String dateOfBirth)
+    {
+        this.dateOfBirth = dateOfBirth;
+    }
+
+    public String getEmailAddress()
+    {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress)
+    {
+        this.emailAddress = emailAddress;
+    }
+
+    public int getPhone()
+    {
+        return phone;
+    }
+
+    public void setPhone(int phone)
+    {
+        this.phone = phone;
+    }
+
+    public String getPassword()
+    {
+        return password;
+    }
+
+    public void setPassword(String password)
+    {
+        this.password = password;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "+--------------------------------------------+"
+                + "\nName: " + name 
+                + "\nEmployee ID: " + employeeID 
+                + "\nDate Of Birth: " + dateOfBirth 
+                + "\nEmail Address: " + emailAddress 
+                + "\nPhone: " + phone +
+                "\n+--------------------------------------------+";
+    }
+    
+    @Override
+    public Employeee clone()
+	{
+		Employeee clone = new Employeee(this.name, this.employeeID, this.dateOfBirth, this.emailAddress, this.phone, this.password);
+		return clone;
+	}
+
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//EMPLOYESTORE
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package groupproject;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Scanner;
+
+/**
+ *
+ * @author Roshen
+ */
+public class EmployeeStoree
+{
+
+    private ArrayList<Employeee> employeeBank = new ArrayList<>();
+
+    public EmployeeStoree()
+    {
+
+    }
+
+    public void loadData(String file) throws FileNotFoundException
+    {
+        try
+        {
+            File dataFile = new File(file);
+            Scanner sc = new Scanner(dataFile).useDelimiter(",");
+
+            while (sc.hasNext())
+            {
+                String name = sc.next();
+                int employID = sc.nextInt();
+                String dateOfBirth = sc.next();
+                String mail = sc.next();
+                int phoneNum = sc.nextInt();
+                String password = sc.next();
+                
+                employeeBank.add(new Employeee(name, employID, dateOfBirth, mail, phoneNum, password));
+                //System.out.println(str);
+            }
+            sc.close();
+        } catch (IOException e)
+        {
+        }
+    }
+
+    public void writeData(String outputFile)
+    {
+
+        try
+        {
+            PrintWriter writer = new PrintWriter(outputFile);
+
+            for (Employeee e : employeeBank)
+            {
+                writer.println(e.save());
+                writer.print(",");
+            }
+            writer.close();
+        } catch (FileNotFoundException ex)
+        {
+            System.out.print("There was an error saving the employees");
+        }
+
+    }
+
+//    public void loadEmployeeList() //FOR TESTING PURPOSES
+//    {
+//        employeeBank.add(new Employeee("John Knox", 57447, "26-06-1964", "abcdef@gmail.com", 1234, "helloworld"));
+//        employeeBank.add(new Employeee("Harry Potter", 12415, "13-04-1977", "qwer@gmail.com", 5678, "aasd"));
+//        employeeBank.add(new Employeee("Danjo Butcher", 21312, "06-02-1967", "zxcv@gmail.com", 9102, "qwer"));
+//        employeeBank.add(new Employeee("Bob Ridley", 12312, "17-11-1989", "asdf@gmail.com", 3456, "zxcv"));
+//        employeeBank.add(new Employeee("Tom Riddle", 46664, "14-10-1987", "hello@gmail.com", 7890, "1234"));
+//    }
+
+    public void addEmployee()
+    {
+        Scanner keyboard = new Scanner(System.in);
+
+        System.out.print("Enter name: ");
+        String name = keyboard.nextLine();
+
+        int employeeID = randomNumber();
+
+        System.out.print("Enter Date of Birth: ");
+        String dateOfBirth = keyboard.nextLine();
+
+        System.out.print("Enter Email: ");
+        String emailAddress = keyboard.nextLine();
+
+        System.out.print("Enter Phone: ");
+        int phoneNumber = keyboard.nextInt();
+
+        System.out.print("Enter Password: ");
+        keyboard.nextLine();
+        String password = keyboard.nextLine();
+
+        employeeBank.add(new Employeee(name, employeeID, dateOfBirth, emailAddress, phoneNumber, password));
+
+    }
+    
+    public enum Priority 
+    {
+        High,
+        Medium,
+        Low
+        
+    }
+
+    public int randomNumber()
+    {
+        boolean end = true;
+        int id = 0;
+        Random r = new Random();
+
+        while (end)
+        {
+            id = r.nextInt(100009);
+
+            if (idChecker(id))
+            {
+                end = !end;
+            }
+        }
+        return id;
+    }
+
+    public boolean idChecker(int id)
+    {
+        boolean check = true;
+        for (int i = 0; i < employeeBank.size(); i++)
+        {
+            Employeee getID = employeeBank.get(i);
+            if (id == getID.getEmployeeID())
+            {
+                check = false;
+            }
+        }
+
+        return check;
+    }
+
+    public String checkEmail(String email)
+    {
+
+        Scanner sc = new Scanner(System.in);
+        boolean end = true;
+        String newEmail = email;
+
+        while (end)
+        {
+            if (!emailChecker(newEmail))
+            {
+                end = !end;
+            }
+            else
+            {
+                System.out.println("The address " + newEmail + " already exists. \n Try again");
+                newEmail = sc.nextLine();
+            }
+        }
+
+        return newEmail;
+    }
+
+    public boolean emailChecker(String email)
+    {
+        boolean check = false;
+        for (int i = 0; i < employeeBank.size(); i++)
+        {
+            Employeee getEmployee = employeeBank.get(i);
+            if (email.equals(getEmployee.getEmailAddress()))
+            {
+                check = true;
+            }
+        }
+
+        return check;
+    }
+
+    // Displays all details of employees
+    public void displayEmployeeList()
+    {
+        for (Employeee p : employeeBank)
+        {
+            System.out.println(p);
+        }
+    }
+
+    public void displaySpecificList(ArrayList<Employeee> e)
+    {
+        for (Employeee p : e)
+        {
+            System.out.println(p);
+        }
+    }
+
+    public ArrayList<String> returnEmployeeList()
+    {
+        ArrayList<String> names = new ArrayList<String>();
+        for (int i = 0; i < employeeBank.size(); i++)
+        {
+            Employeee e = employeeBank.get(i);// Getting the employeeStorer object
+            String name = e.getName();// Getting the name from the object
+            names.add(name);// adding that name to an arraylist 
+        }
+        return names;
+    }
+
+    public ArrayList<Employeee> returnSpecificEmployee(String name)
+    {
+        ArrayList<Employeee> employee = new ArrayList<Employeee>();
+        for (int i = 0; i < employeeBank.size(); i++)
+        {
+            Employeee e = employeeBank.get(i); // Getting the employeeStorer object
+            String ename = e.getName(); // Getting the name from the object
+            if (ename.equals(name))// Deciding if their the same
+            {
+                employee.add(e);// Adding them to an arraylist
+                System.out.println("Matched");
+            }
+            else
+            {
+                System.out.println("UNMatched");
+            }
+        }
+
+        return employee;
+    }
+    
+    public void editEmployee(int ID)
+    {
+        Scanner keyboard = new Scanner(System.in);
+        ArrayList<Employeee> employeeStorer = new ArrayList<Employeee>();
+        Employeee person = new Employeee("", 0, "", "", 0, "");
+        for (int i = 0; i < employeeBank.size(); i++)
+        {
+            Employeee e = employeeBank.get(i); // Getting the employeeStorer object
+            int employID = e.getEmployeeID(); // Getting the name from the object
+
+            if (employID == ID)
+            {
+                person = e;
+            }
+        }
+        int option = -1;
+        do
+        {
+            System.out.println(
+                    "\n 1: Edit name"
+                    + "\n 2: Edit date of birth"
+                    + "\n 3: Edit email address"
+                    + "\n 4: Edit phone number"
+                    + "\n 5: Edit password"
+                    + "\n 0: Exit"
+            );
+            System.out.print("Select option: ");
+            option = keyboard.nextInt();
+            keyboard.reset();
+            switch (option)
+            {
+                case 1:
+                    System.out.println("Current name: " + person.getName());
+                    System.out.print("New Name: ");
+
+                    String bufferReleaser = keyboard.nextLine();
+                    String name = keyboard.nextLine();
+                    person.setName(name);
+                    break;
+                case 2:
+                    System.out.println("Current Date of Birth: " + person.getDateOfBirth());
+                    System.out.print("New Date of Birth: ");
+                    String bufferReleaser2 = keyboard.nextLine();
+                    String dob = keyboard.nextLine();
+                    person.setDateOfBirth(dob);
+                    break;
+                case 3:
+                    System.out.println("Current email address: " + person.getEmailAddress());
+                    System.out.print("New email: ");
+                    String bufferReleaser3 = keyboard.nextLine();
+                    String email = keyboard.nextLine();
+                    String checkedEmail = checkEmail(email);
+                    person.setEmailAddress(checkedEmail);
+                    break;
+                case 4:
+                    System.out.println("Current phone number " + person.getPhone());
+                    System.out.print("New phone number: ");
+                    int phone = keyboard.nextInt();
+                    person.setPhone(phone);
+                    break;
+                case 5:
+                    System.out.println("Current password " + person.getPassword());
+                    System.out.print("New password: ");
+                    String bufferReleaser4 = keyboard.nextLine();
+                    String password = keyboard.nextLine();
+                    person.setPassword(password);
+                    break;
+            }
+
+        } while (option != 0);
+        System.out.println("Updated Information" + "\n" + person);
+    }
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//AGENT
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package groupproject;
+
+/**
+ *
+ * @author user
+ */
+public class agent extends Employeee {
+
+    
+    public agent(String name, int employeeID, String dateOfBirth, String emailAddress, int phone, String password, Double salary) {
+        super(name, employeeID, dateOfBirth, emailAddress, phone, password, salary);
+    }
+
+    
+    
+    
+
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//CONTRACTORS
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package groupproject;
+
+/**
+ *
+ * @author user
+ */
+public class contractor extends Employeee {
+
+  
+    
+    public contractor(String name, int employeeID, String dateOfBirth, String emailAddress, int phone, String password, Double hoursWorked, Double hourlyRate) {
+        super(name, employeeID, dateOfBirth, emailAddress, phone, password);
+    }
+
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//MAIN APP
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package groupproject;
+
+import groupproject.Message.Priority;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Scanner;
+
+/**
+ *
+ * @author Roshen
+ */
+public class GroupProject
+{
+
+    public static void main(String[] args) throws FileNotFoundException
+    {
+        MessageStore messageStore = new MessageStore();
+        EmployeeStoree employeeStoree = new EmployeeStoree();
+        Scanner keyboard = new Scanner(System.in);
+        System.out.println("--------------------------------");
+        System.out.println("       Adminstrator Login       ");
+        System.out.println("--------------------------------");
+        String userInput,passInput;
+        System.out.print("Username: ");
+        userInput = keyboard.nextLine();
+        System.out.print("Password: ");
+        passInput = keyboard.nextLine();
+        boolean validateAdminLogin = messageStore.adminstratorLogin(userInput,passInput);
+       // boolean validateAdminLogin = true; //TEMP 
+
+        //messageStore.loadMessageList(); //PreData for testing purposes
+        //employeeStore.loadEmployeeList();
+        employeeStoree.loadData("employees.txt");
+        messageStore.loadData("messages.txt");
+        if (validateAdminLogin)
+        {
+            int mainOption = -1;
+            do
+            {
+                System.out.println("--------------------------------");
+                System.out.println("          Main Option           ");
+                System.out.println("--------------------------------");
+                System.out.println(" Option:                        ");
+                System.out.println("|        1. Employees          |");
+                System.out.println("|        2. Emails             |");
+                System.out.println("|        0. Exit               |");
+                System.out.println("--------------------------------");
+                System.out.print(" Select option: ");
+                mainOption = keyboard.nextInt();
+
+                switch (mainOption)
+                {
+                    case 1:
+                        int employOptions = -1;
+                        do
+                        {
+                            System.out.println("==============================================================");
+                            System.out.println("|                    EMPLOYEES MENU                          |");
+                            System.out.println("==============================================================");
+                            System.out.println("| Options:                                                   |");
+                            System.out.println("|        1. Display all info on employees                    |");
+                            System.out.println("|        2. Add an employee                                  |");
+                            System.out.println("|        3. Return Specific employee details by name         |");
+                            System.out.println("|        4. Return all employee names in a list              |");
+                            System.out.println("|        5. Edit employee details                            |");
+                            System.out.println("|        0. To Exit                                          |");
+                            System.out.println("==============================================================");
+                            System.out.print(" Select option: ");
+                            employOptions = keyboard.nextInt();
+
+                            switch (employOptions)
+                            {
+                                case 1:
+                                    //employeeStore.displayEmployeeList();
+                                    employeeStoree.displayEmployeeList();
+                                    break;
+                                case 2:
+                                    employeeStoree.addEmployee();
+                                    break;
+                                case 3:
+                                    System.out.print("Enter name: ");
+                                    keyboard.nextLine();
+                                    String name = keyboard.nextLine();
+                                    ArrayList<Employeee> i = employeeStoree.returnSpecificEmployee(name);
+                                    employeeStoree.displaySpecificList(i);
+                                    break;
+                                case 4:
+                                    ArrayList<String> n = employeeStoree.returnEmployeeList();
+                                    System.out.println(Arrays.toString(n.toArray()));
+                                    break;
+                                case 5:
+                                    // employeeStoree.loadEmployeeList(); //TESTING PURPOSES
+                                    System.out.print("Enter ID: ");
+                                    int id = keyboard.nextInt();
+                                    employeeStoree.editEmployee(id);
+                                    break;
+                                case 0:
+                                    employeeStoree.writeData("employees.txt");
+                                    break;
+                            }
+
+                        } while (employOptions != 0);
+                        break;
+
+                    case 2:
+                        int mailOptions = -1;
+                        do
+                        {
+                            System.out.println("==============================================================");
+                            System.out.println("|                       EMAIL MENU                           |");
+                            System.out.println("==============================================================");
+                            System.out.println("| Options:                                                   |");
+                            System.out.println("|        1. Send An Email                                    |");
+                            System.out.println("|        2. Print All Email                                  |");
+                            System.out.println("|        3. Display specific message by ID                   |");
+                            System.out.println("|        4. Display specific message by From Email           |");
+                            System.out.println("|        5. Display specific message by To Email             |");
+                            System.out.println("|        6. Display message by Priority                      |");
+                            System.out.println("|        7. Display message by Substring                     |");
+                            System.out.println("|        8. Display message by Date                          |");
+                            System.out.println("|        9. Sorted Array by ID                               |");
+                            System.out.println("|        10. Sorted Array by Date                            |");
+                            System.out.println("|        0. To Exit                                          |");
+                            System.out.println("==============================================================");
+                            System.out.print(" Select option: ");
+                            mailOptions = keyboard.nextInt();
+
+                            switch (mailOptions)
+                            {
+                                case 1:
+                                    //Add new message
+                                    System.out.print("From: ");
+                                    keyboard.nextLine();
+                                    String fromAddress = keyboard.nextLine();
+
+                                    System.out.print("To: ");
+                                    String toAddress = keyboard.nextLine();
+
+                                    System.out.print("Subject: ");
+                                    String subject = keyboard.nextLine();
+                                    
+                                    System.out.print("Priority (Low/Medium/High): ");
+                                    String prior = keyboard.nextLine();
+                                    Priority priority = Priority.valueOf(prior.toUpperCase());
+
+                                    System.out.print("Message: ");
+                                    String messageBody = keyboard.nextLine();
+//                                    if
+                                    messageStore.addMessage(fromAddress, toAddress, subject, priority, messageBody);
+                                    break;
+                                case 2:
+                                    //Printing all the messages in the Array
+                                    messageStore.printAllMessage();
+                                    break;
+                                case 3:
+                                    System.out.print("Enter ID: ");
+                                    int id = keyboard.nextInt();
+                                    ArrayList<Message> i = messageStore.specificMessageByID(id);
+                                    System.out.println(Arrays.toString(i.toArray()));
+                                    break;
+                                case 4:
+                                    System.out.print("Enter FROM email: ");
+                                    String fromEmail = keyboard.next();
+                                    ArrayList<Message> fromMailStorer = messageStore.specificMessageByEmail(fromEmail, mailOptions);
+                                    System.out.println(Arrays.toString(fromMailStorer.toArray()));
+                                    break;
+                                case 5:
+                                    System.out.print("Enter TO email: ");
+                                    String toEmail = keyboard.next();
+                                    ArrayList<Message> toMailStorer = messageStore.specificMessageByEmail(toEmail, mailOptions);
+                                    System.out.println(Arrays.toString(toMailStorer.toArray()));
+                                    break;
+                                case 6:
+                                    System.out.print("Enter Priority: ");
+                                    String priorty = keyboard.next();
+                                    Priority priorities = Priority.valueOf(priorty);
+                                    ArrayList<Message> priorBank = messageStore.specificMessageByPriority(priorities);
+                                    System.out.println(Arrays.toString(priorBank.toArray()));
+                                    break;
+                                case 7:
+                                    System.out.print("Enter String: ");
+                                    String subString = keyboard.next();
+                                    ArrayList<Message> stringBank = messageStore.specificMessageBySubstring(subString);
+                                    System.out.println(Arrays.toString(stringBank.toArray()));
+                                    break;
+                                case 8:
+                                    System.out.print("Enter Date: ");
+                                    String date = keyboard.next();
+                                    ArrayList<Message> dateBank = messageStore.specificMessageByDate(date);
+                                    System.out.println(Arrays.toString(dateBank.toArray()));
+                                    break;
+                                case 9:
+                                    System.out.print("Sorted Array by ID");
+                                    ArrayList<Message> dataBank = messageStore.arrayList();
+                                    Collections.sort(dataBank, new MessageStore.OrderByID());
+                                    System.out.println(Arrays.toString(dataBank.toArray()));
+                                    break;
+                                case 10:
+                                    System.out.print("Sorted Array by Date");
+                                    dataBank = messageStore.arrayList();
+                                    Collections.sort(dataBank, new MessageStore.OrderByDate()); //NOT WORKING
+                                    System.out.println(Arrays.toString(dataBank.toArray()));
+                                    break;
+                                case 0:
+                                    messageStore.writeData("messages.txt");
+                                    break;
+
+                            }
+                        } while (mailOptions != 0);
+                        break;
+                }
+
+            } while (mainOption != 0);
+
+        }
+    }
+}
+
